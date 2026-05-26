@@ -27,3 +27,10 @@ pnpm-debug.log*
 
 # astro
 .astro/
+
+# tooling caches
+.codegraph/
+.cursor/
+
+# only pnpm-lock is used
+package-lock.json
