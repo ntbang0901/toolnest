@@ -1,5 +1,3 @@
-import { Parser } from "@dbml/core";
-
 export type RelationKind = "1-1" | "1-n" | "n-n";
 
 export interface ModelColumn {
@@ -133,7 +131,7 @@ function inferRelation(a: string, b: string): RelationKind {
   return "1-n";
 }
 
-export function buildSchemaModel(dbml: string): { ok: true; model: SchemaModel } | { ok: false; error: string } {
+export async function buildSchemaModel(dbml: string): Promise<{ ok: true; model: SchemaModel } | { ok: false; error: string }> {
   if (!dbml.trim()) {
     return {
       ok: true,
@@ -141,6 +139,7 @@ export function buildSchemaModel(dbml: string): { ok: true; model: SchemaModel }
     };
   }
   try {
+    const { Parser } = await import("@dbml/core");
     const parser = new Parser();
     const database = parser.parse(dbml, "dbml");
     const schemas = (database.schemas ?? []) as unknown as SchemaLite[];

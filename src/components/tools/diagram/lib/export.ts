@@ -1,4 +1,3 @@
-import { toPng, toSvg } from "html-to-image";
 import type { DiagramSnapshot } from "./persist";
 
 export async function exportImage(
@@ -17,6 +16,7 @@ export async function exportImage(
       return true;
     },
   };
+  const { toPng, toSvg } = await import("html-to-image");
   const dataUrl = kind === "png" ? await toPng(el, opts) : await toSvg(el, opts);
   triggerDownload(dataUrl, `diagram.${kind}`);
 }

@@ -1,4 +1,3 @@
-import { Parser } from "@dbml/core";
 import type { Edge, Node } from "@xyflow/react";
 import type { CrowFootEdgeData } from "./crow-foot-edge";
 import type { DbColumn, DbIndexEntry, DbTableData } from "./table-node";
@@ -55,6 +54,19 @@ export type ParsedSchema = {
   tableLines: Record<string, number>;
 };
 
+export type ParseResult =
+  | { ok: true; data: ParsedSchema }
+  | { ok: false; error: string };
+
+const EMPTY: ParsedSchema = {
+  nodes: [],
+  edges: [],
+  tableCount: 0,
+  fieldCount: 0,
+  refCount: 0,
+  tableLines: {},
+};
+
 function tableId(schema: string | undefined, name: string): string {
   return schema && schema !== "public" ? `${schema}.${name}` : name;
 }
@@ -77,20 +89,17 @@ function indexTableLines(dbml: string): Record<string, number> {
     const name = secondName || firstName;
     if (!name) continue;
     const id = tableId(schema, name);
-    const line = dbml.slice(0, m.index).split("\n").length; // 1-based
+    const line = dbml.slice(0, m.index).split("\n").length;
     if (!(id in out)) out[id] = line;
     if (!(name in out)) out[name] = line;
   }
   return out;
 }
 
-export function parseDbml(dbml: string): { ok: true; data: ParsedSchema } | { ok: false; error: string } {
-  if (!dbml.trim())
-    return {
-      ok: true,
-      data: { nodes: [], edges: [], tableCount: 0, fieldCount: 0, refCount: 0, tableLines: {} },
-    };
+export async function parseDbml(dbml: string): Promise<ParseResult> {
+  if (!dbml.trim()) return { ok: true, data: EMPTY };
   try {
+    const { Parser } = await import("@dbml/core");
     const parser = new Parser();
     const database = parser.parse(dbml, "dbml");
     const schemas = (database.schemas ?? []) as unknown as SchemaLite[];

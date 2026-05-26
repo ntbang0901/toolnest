@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
@@ -21,19 +21,31 @@ function colorOf(kind: string): string {
   return COLOR.changed;
 }
 
+type DiffResult =
+  | { error: string }
+  | { diff: ReturnType<typeof diffSchemas>; sql: string };
+
 export function DiffView({ current }: Props) {
   const [a, setA] = useState(current);
   const [b, setB] = useState(current);
   const [dialect, setDialect] = useState<"postgres" | "mysql">("postgres");
+  const [result, setResult] = useState<DiffResult>({ error: "" });
 
-  const result = useMemo(() => {
-    const ma = buildSchemaModel(a);
-    const mb = buildSchemaModel(b);
-    if (!ma.ok) return { error: `Left: ${ma.error}` };
-    if (!mb.ok) return { error: `Right: ${mb.error}` };
-    const diff = diffSchemas(ma.model, mb.model);
-    const sql = toMigrationSql(ma.model, mb.model, dialect);
-    return { diff, sql };
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const ma = await buildSchemaModel(a);
+      const mb = await buildSchemaModel(b);
+      if (cancelled) return;
+      if (!ma.ok) return setResult({ error: `Left: ${ma.error}` });
+      if (!mb.ok) return setResult({ error: `Right: ${mb.error}` });
+      const diff = diffSchemas(ma.model, mb.model);
+      const sql = toMigrationSql(ma.model, mb.model, dialect);
+      setResult({ diff, sql });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [a, b, dialect]);
 
   return (

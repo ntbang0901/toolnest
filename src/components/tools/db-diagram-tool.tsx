@@ -6,8 +6,6 @@ import {
   type Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { exporter, importer } from "@dbml/core";
-import { toPng, toSvg } from "html-to-image";
 import {
   Download,
   Keyboard,
@@ -25,8 +23,9 @@ import { CopyButton } from "@/components/tools/copy-button";
 import { type DbTableData } from "@/components/tools/db-diagram/table-node";
 import { type CrowFootEdgeData } from "@/components/tools/db-diagram/crow-foot-edge";
 import { layoutTables } from "@/components/tools/db-diagram/layout";
-import { parseDbml } from "@/components/tools/db-diagram/parse";
-import { buildSchemaModel } from "@/components/tools/db-diagram/schema-model";
+import { parseDbml, type ParseResult } from "@/components/tools/db-diagram/parse";
+import { buildSchemaModel, type SchemaModel } from "@/components/tools/db-diagram/schema-model";
+import { useDeferredAsync } from "@/components/tools/db-diagram/use-deferred-async";
 import { lintSchema } from "@/components/tools/db-diagram/lint/lint";
 import {
   applyLayout,
@@ -94,8 +93,16 @@ function DbDiagramInner() {
   const searchRef = useRef<HTMLInputElement>(null);
   const { fitView, setCenter, getNode } = useReactFlow();
 
-  const parsed = useMemo(() => parseDbml(dbml), [dbml]);
-  const modelResult = useMemo(() => buildSchemaModel(dbml), [dbml]);
+  const parsed = useDeferredAsync<ParseResult>(
+    () => parseDbml(dbml),
+    [dbml],
+    { ok: true, data: { nodes: [], edges: [], tableCount: 0, fieldCount: 0, refCount: 0, tableLines: {} } },
+  );
+  const modelResult = useDeferredAsync<{ ok: true; model: SchemaModel } | { ok: false; error: string }>(
+    () => buildSchemaModel(dbml),
+    [dbml],
+    { ok: true, model: { tables: [], refs: [], enums: [], tableCount: 0, fieldCount: 0, refCount: 0 } },
+  );
   const model = modelResult.ok ? modelResult.model : null;
   const lintIssues = useMemo(() => (model ? lintSchema(model) : []), [model]);
 
@@ -134,18 +141,31 @@ function DbDiagramInner() {
     setCenterTable(null);
   }, [centerTable, getNode, setCenter, internalNodes]);
 
-  const exported = useMemo(() => {
-    if (!dbml.trim()) return "";
-    try {
-      return exporter.export(dbml, exportFmt);
-    } catch (err) {
-      return err instanceof Error ? err.message : "Failed to export";
+  const [exported, setExported] = useState("");
+  useEffect(() => {
+    if (!dbml.trim()) {
+      setExported("");
+      return;
     }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { exporter } = await import("@dbml/core");
+        const out = exporter.export(dbml, exportFmt);
+        if (!cancelled) setExported(out);
+      } catch (err) {
+        if (!cancelled) setExported(err instanceof Error ? err.message : "Failed to export");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [dbml, exportFmt]);
 
-  const handleImport = () => {
+  const handleImport = async () => {
     if (!importSql.trim()) return;
     try {
+      const { importer } = await import("@dbml/core");
       const out = importer.import(importSql, importFmt);
       setDbml(out);
       setView("diagram");
@@ -170,6 +190,7 @@ function DbDiagramInner() {
       },
     };
     try {
+      const { toPng, toSvg } = await import("html-to-image");
       const dataUrl = kind === "png" ? await toPng(flow, opts) : await toSvg(flow, opts);
       const a = document.createElement("a");
       a.href = dataUrl;
