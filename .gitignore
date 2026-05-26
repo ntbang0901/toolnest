@@ -34,3 +34,9 @@ pnpm-debug.log*
 
 # only pnpm-lock is used
 package-lock.json
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
