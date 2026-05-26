@@ -1,0 +1,8 @@
+---
+import ToolLayout from "@/layouts/tool-layout.astro";
+import DbDiagramTool from "@/components/tools/db-diagram-tool.tsx";
+---
+
+<ToolLayout slug="db-diagram">
+  <DbDiagramTool client:only="react" />
+</ToolLayout>

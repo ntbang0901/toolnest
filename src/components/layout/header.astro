@@ -1,0 +1,30 @@
+---
+import { Boxes } from "lucide-react";
+import ThemeToggle from "@/components/layout/theme-toggle.tsx";
+import CommandPaletteTrigger from "@/components/layout/command-palette-trigger.tsx";
+import MobileNavTrigger from "@/components/layout/mobile-nav-trigger.tsx";
+import { tools } from "@/lib/tools-registry";
+
+const toolIndex = tools.map(({ slug, name, description, category, keywords }) => ({
+  slug,
+  name,
+  description,
+  category,
+  keywords,
+}));
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur-md">
+  <div class="mx-auto flex h-14 w-full max-w-7xl items-center gap-2 px-4">
+    <MobileNavTrigger client:load currentPath={currentPath} />
+    <a href="/" class="flex items-center gap-2 text-sm font-semibold tracking-tight hover:opacity-80 transition-opacity">
+      <Boxes className="h-4 w-4 text-brand" aria-hidden="true" />
+      <span>toolnest</span>
+    </a>
+    <div class="flex-1" />
+    <CommandPaletteTrigger client:load tools={toolIndex} />
+    <ThemeToggle client:load />
+  </div>
+</header>

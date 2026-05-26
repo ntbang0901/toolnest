@@ -1,0 +1,8 @@
+---
+import ToolLayout from "@/layouts/tool-layout.astro";
+import MermaidTool from "@/components/tools/mermaid-tool.tsx";
+---
+
+<ToolLayout slug="mermaid">
+  <MermaidTool client:only="react" />
+</ToolLayout>

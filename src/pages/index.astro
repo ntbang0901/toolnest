@@ -1,0 +1,79 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro";
+import { categories, getFeaturedTools, tools } from "@/lib/tools-registry";
+import RecentlyUsed from "@/components/layout/recently-used.tsx";
+
+const featured = getFeaturedTools();
+const grouped = categories
+  .map((cat) => ({
+    ...cat,
+    items: tools.filter((tool) => tool.category === cat.id),
+  }))
+  .filter((cat) => cat.items.length > 0);
+---
+
+<BaseLayout>
+  <section class="mb-12">
+    <h1 class="text-2xl font-semibold tracking-tight sm:text-3xl">
+      Developer tools, in your browser.
+    </h1>
+    <p class="mt-2 max-w-xl text-sm text-muted-foreground">
+      {tools.length} small utilities. No account, no upload. Press <kbd
+        class="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px]"
+        >⌘K</kbd
+      > to search.
+    </p>
+  </section>
+
+  <RecentlyUsed client:load />
+
+  {
+    featured.length > 0 && (
+      <section class="mb-10">
+        <h2 class="mb-3 text-xs font-medium text-muted-foreground">Featured</h2>
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <a
+                href={`/tools/${tool.slug}`}
+                class="group flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 transition-all hover:border-foreground/20 hover:shadow-sm hover:-translate-y-px"
+              >
+                <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground group-hover:text-foreground transition-colors" aria-hidden="true" />
+                <div class="min-w-0">
+                  <div class="text-sm font-medium">{tool.name}</div>
+                  <div class="text-xs text-muted-foreground leading-relaxed">{tool.description}</div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    grouped.map((cat) => (
+      <section class="mb-8">
+        <div class="mb-3 flex items-baseline justify-between">
+          <h2 class="text-xs font-medium text-muted-foreground">{cat.label}</h2>
+          <span class="font-mono text-xs text-muted-foreground/70">{cat.items.length}</span>
+        </div>
+        <div class="grid gap-x-6 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+          {cat.items.map((tool) => {
+            const Icon = tool.icon;
+            return (
+              <a
+                href={`/tools/${tool.slug}`}
+                class="group flex items-center gap-2.5 rounded-lg px-2.5 py-2 transition-all hover:bg-accent/50 hover:translate-x-0.5"
+              >
+                <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors" aria-hidden="true" />
+                <span class="truncate text-sm text-muted-foreground group-hover:text-foreground transition-colors">{tool.name}</span>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    ))
+  }
+</BaseLayout>
