@@ -6,6 +6,18 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
 
+let mermaidInitialized = false;
+async function getMermaid() {
+  const mod = await import("mermaid");
+  const mermaid = mod.default;
+  if (!mermaidInitialized) {
+    const dark = document.documentElement.classList.contains("dark");
+    mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default", securityLevel: "loose", fontFamily: "ui-sans-serif, system-ui, sans-serif" });
+    mermaidInitialized = true;
+  }
+  return mermaid;
+}
+
 const SAMPLE = `# Toolnest
 
 > Local-first developer tools.
@@ -42,7 +54,33 @@ export default function MarkdownPreviewTool() {
 
   const previewRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (previewRef.current) previewRef.current.innerHTML = html;
+    const el = previewRef.current;
+    if (!el) return;
+    el.innerHTML = html;
+
+    const blocks = el.querySelectorAll<HTMLElement>("code.language-mermaid");
+    if (!blocks.length) return;
+
+    let cancelled = false;
+    getMermaid().then((mermaid) => {
+      if (cancelled) return;
+      blocks.forEach((block, i) => {
+        const source = block.textContent ?? "";
+        const id = `md-mmd-${Date.now()}-${i}`;
+        mermaid.render(id, source).then(({ svg }) => {
+          if (cancelled) return;
+          const wrapper = block.closest("pre") ?? block;
+          const div = document.createElement("div");
+          div.className = "flex justify-center overflow-auto my-4";
+          div.innerHTML = svg;
+          wrapper.replaceWith(div);
+        }).catch(() => {
+          // leave the original code block on error
+        });
+      });
+    });
+
+    return () => { cancelled = true; };
   }, [html]);
 
   return (
