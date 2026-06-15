@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CopyButton } from "@/components/tools/copy-button";
@@ -24,6 +24,13 @@ export default function PasteShareTool() {
   const [status, setStatus] = useState<Status>("idle");
   const [shareUrl, setShareUrl] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (status === "success" && resultRef.current) {
+      resultRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [status]);
 
   const handleShare = async () => {
     if (!content.trim()) return;
@@ -98,7 +105,7 @@ export default function PasteShareTool() {
       />
 
       {status === "success" && shareUrl && (
-        <div className="flex items-center gap-2">
+        <div ref={resultRef} className="flex items-center gap-2">
           <Input value={shareUrl} readOnly className="flex-1 font-mono text-xs" />
           <CopyButton value={shareUrl} label="Copy link" />
         </div>
