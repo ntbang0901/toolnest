@@ -1,0 +1,8 @@
+---
+import BaseLayout from "@/layouts/base-layout.astro";
+import PasteView from "@/components/tools/paste-view.tsx";
+---
+
+<BaseLayout title="Paste — Toolnest" description="Shared paste" showSidebar={false}>
+  <PasteView client:load />
+</BaseLayout>

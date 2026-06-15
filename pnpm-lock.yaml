@@ -126,6 +126,9 @@ importers:
         specifier: ^5.7.3
         version: 5.9.3
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20260613.1
+        version: 4.20260613.1
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.15
@@ -284,6 +287,9 @@ packages:
 
   '@chevrotain/types@11.1.2':
     resolution: {integrity: sha512-U+HFai5+zmJCkK86QsaJtoITlboZHBqrVketcO2ROv865xfCMSFpELQoz1GkX5GzME8pTa+3kbKrZHQtI0gdbw==}
+
+  '@cloudflare/workers-types@4.20260613.1':
+    resolution: {integrity: sha512-1mrgjE6epolwBhroeGAp5ud5H6Vyi6tl1o/NP0T4rXJ8bmEjmhHnbCzAhHTDHV0PIeip43wcuzHKJarvaGTaUA==}
 
   '@codemirror/autocomplete@6.20.2':
     resolution: {integrity: sha512-G5FPkgIiLjOgZMjqVjvuKQ1rGPtHogLldJr33eFJdVLtmwY+giGrlv/ewljLz6b9BSQLkjxuwBc6g6omDM+YxQ==}
@@ -3648,6 +3654,8 @@ snapshots:
       fontkitten: 1.0.3
 
   '@chevrotain/types@11.1.2': {}
+
+  '@cloudflare/workers-types@4.20260613.1': {}
 
   '@codemirror/autocomplete@6.20.2':
     dependencies:

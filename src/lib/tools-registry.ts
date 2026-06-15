@@ -55,6 +55,7 @@ import {
   Link,
   CalendarDays,
   Ruler,
+  Share2,
 } from "lucide-react";
 
 export type ToolCategory =
@@ -560,6 +561,14 @@ export const tools: Tool[] = [
     category: "converter",
     icon: Boxes,
     keywords: ["toml", "json", "convert", "cargo", "hugo", "config"],
+  },
+  {
+    slug: "paste-share",
+    name: "Paste & Share",
+    description: "Paste content and get a shareable link — stored for 7 days.",
+    category: "web",
+    icon: Share2,
+    keywords: ["paste", "share", "link", "snippet", "gist"],
   },
 ];
 

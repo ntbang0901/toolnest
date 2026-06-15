@@ -1,5 +1,11 @@
 name = "toolnest"
 compatibility_date = "2026-05-26"
+main = "src/worker.ts"
+
+# Run `wrangler kv namespace create PASTES` and replace the placeholder IDs below.
+kv_namespaces = [
+  { binding = "PASTES", id = "66475ee68e5846528927091404d2a640", preview_id = "66475ee68e5846528927091404d2a640" }
+]
 
 [assets]
 directory = "./dist"
