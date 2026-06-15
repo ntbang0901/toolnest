@@ -6,6 +6,7 @@ import { CodeEditor, type CodeLang } from "@/components/tools/code-editor";
 
 const LANGUAGES: { value: CodeLang; label: string }[] = [
   { value: "plain", label: "Plain Text" },
+  { value: "markdown", label: "Markdown" },
   { value: "json", label: "JSON" },
   { value: "javascript", label: "JavaScript" },
   { value: "typescript", label: "TypeScript" },
