@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type Op = "equal" | "add" | "remove";
@@ -70,19 +70,21 @@ export default function DiffViewerTool() {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid gap-4 lg:grid-cols-2">
-        <Textarea
+        <CodeEditor
           value={left}
-          onChange={(e) => setLeft(e.target.value)}
+          onChange={setLeft}
+          language="plain"
           placeholder="Original text…"
-          className="min-h-[180px] font-mono text-sm lg:min-h-[220px]"
-          spellCheck={false}
+          minHeight="180px"
+          className="lg:min-h-[220px]"
         />
-        <Textarea
+        <CodeEditor
           value={right}
-          onChange={(e) => setRight(e.target.value)}
+          onChange={setRight}
+          language="plain"
           placeholder="Modified text…"
-          className="min-h-[180px] font-mono text-sm lg:min-h-[220px]"
-          spellCheck={false}
+          minHeight="180px"
+          className="lg:min-h-[220px]"
         />
       </div>
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 const SAMPLE = `{
   "store": {
@@ -24,7 +25,10 @@ const PRESETS = [
 ];
 
 export default function JsonpathTool() {
-  const [json, setJson] = useState(SAMPLE);
+  const [json, setJson] = useState(() => {
+    const r = formatInput(SAMPLE, "json");
+    return r.ok ? r.value : SAMPLE;
+  });
   const [path, setPath] = useState("$.store.books[*].title");
 
   const result = useMemo(() => {
@@ -67,13 +71,25 @@ export default function JsonpathTool() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">JSON</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">JSON</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const r = formatInput(json, "json");
+                if (r.ok) setJson(r.value);
+              }}
+              disabled={!json.trim()}
+            >
+              Format
+            </Button>
+          </div>
           <CodeEditor
             value={json}
             onChange={setJson}
             language="json"
-            minHeight="280px"
-            className="lg:min-h-[400px]"
+            height="400px"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -85,8 +101,7 @@ export default function JsonpathTool() {
             value={result.value}
             language="json"
             readOnly
-            minHeight="280px"
-            className="lg:min-h-[400px]"
+            height="400px"
           />
           {result.error && <p className="text-xs text-destructive">{result.error}</p>}
         </div>

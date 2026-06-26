@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyButton } from "@/components/tools/copy-button";
@@ -109,7 +109,7 @@ export default function UuidGeneratorTool() {
           </span>
           <CopyButton value={formatted} label="Copy all" />
         </div>
-        <Textarea value={formatted} readOnly className="min-h-[280px] font-mono text-sm lg:min-h-[400px]" spellCheck={false} />
+        <CodeEditor value={formatted} readOnly language="plain" minHeight="280px" className="lg:min-h-[400px]" />
       </div>
     </div>
   );

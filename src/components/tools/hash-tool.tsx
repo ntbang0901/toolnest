@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 
@@ -133,12 +133,12 @@ export default function HashTool() {
             ]}
           />
         </div>
-        <Textarea
+        <CodeEditor
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
+          language="plain"
           placeholder="Type or paste text…"
-          className="min-h-[140px]"
-          spellCheck={false}
+          minHeight="140px"
         />
         <p className="text-xs text-muted-foreground">
           UTF-8 hashed locally. SHA family runs in WebCrypto, MD5 in pure JS — never sent to a server.

@@ -3,6 +3,7 @@ import { parse as parseTOML, stringify as stringifyTOML } from "smol-toml";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 const SAMPLE_TOML = `[package]
 name = "my-app"
@@ -82,6 +83,17 @@ export default function TomlJsonTool() {
           </button>
         </div>
         <Button variant="ghost" size="sm" onClick={loadExample}>Example</Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const r = formatInput(input, "json");
+            if (r.ok) setInput(r.value);
+          }}
+          disabled={direction !== "json-to-toml" || !input.trim() || !result.ok}
+        >
+          Format
+        </Button>
         <Button variant="outline" size="sm" onClick={swap} disabled={!result.ok || !result.output}>
           ⇄ Swap
         </Button>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 
 const WPM = 200;
 
@@ -59,12 +59,13 @@ export default function WordCounterTool() {
           Clear
         </Button>
       </div>
-      <Textarea
+      <CodeEditor
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={setInput}
+        language="plain"
         placeholder="Type or paste text…"
-        className="min-h-[220px] lg:min-h-[300px]"
-        spellCheck={false}
+        minHeight="220px"
+        className="lg:min-h-[300px]"
       />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

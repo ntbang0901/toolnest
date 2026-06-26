@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 type Direction = "yaml2json" | "json2yaml";
 
@@ -27,7 +28,7 @@ function convert(input: string, dir: Direction, indent: number): string {
 
 export default function YamlJsonTool() {
   const [direction, setDirection] = useState<Direction>("yaml2json");
-  const [input, setInput] = useState(SAMPLE);
+  const [input, setInput] = useState(() => { const r = formatInput(SAMPLE, "yaml"); return r.ok ? r.value : SAMPLE; });
   const [indent, setIndent] = useState<"2" | "4">("2");
 
   const result = useMemo(() => {
@@ -63,6 +64,17 @@ export default function YamlJsonTool() {
             { value: "4", label: "4 sp" },
           ]}
         />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const r = formatInput(input, fromLang);
+            if (r.ok) setInput(r.value);
+          }}
+          disabled={!input.trim() || !result.ok}
+        >
+          Format
+        </Button>
         <Button variant="ghost" size="sm" onClick={() => setInput(SAMPLE)}>
           Sample
         </Button>
@@ -73,7 +85,9 @@ export default function YamlJsonTool() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <span className="text-sm font-medium">{direction === "yaml2json" ? "YAML" : "JSON"}</span>
+          <div className="flex min-h-8 items-center">
+            <span className="text-sm font-medium">{direction === "yaml2json" ? "YAML" : "JSON"}</span>
+          </div>
           <CodeEditor
             value={input}
             onChange={setInput}
@@ -83,7 +97,7 @@ export default function YamlJsonTool() {
           />
         </div>
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+          <div className="flex min-h-8 items-center justify-between">
             <span className="text-sm font-medium">{direction === "yaml2json" ? "JSON" : "YAML"}</span>
             <CopyButton value={result.ok ? result.value : ""} />
           </div>

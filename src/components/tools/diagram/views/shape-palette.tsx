@@ -61,7 +61,7 @@ export function ShapePalette() {
                 <button
                   type="button"
                   onClick={() => toggle(cat.id)}
-                  className="flex w-full items-center gap-1.5 rounded-sm px-1 py-1.5 text-left text-[11px] font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:bg-accent/40"
+                  className="flex w-full items-center gap-1.5 rounded-sm px-1 py-1.5 text-left text-[11px] font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:bg-muted"
                 >
                   {isOpen ? (
                     <ChevronDown className="h-3 w-3" />

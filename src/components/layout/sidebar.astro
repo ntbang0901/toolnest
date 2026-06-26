@@ -12,7 +12,7 @@ const currentPath = Astro.url.pathname;
 ---
 
 <aside class="hidden w-56 shrink-0 lg:block">
-  <nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">
+  <nav class="sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 sidebar-nav">
     <ul class="flex flex-col gap-5 text-sm">
       {
         grouped.map((cat) => (
@@ -32,7 +32,7 @@ const currentPath = Astro.url.pathname;
                         "block rounded-lg px-2.5 py-1.5 text-sm transition-all",
                         active
                           ? "bg-primary/10 text-primary font-medium"
-                          : "text-muted-foreground hover:bg-accent/60 hover:text-foreground hover:translate-x-0.5",
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground hover:translate-x-0.5",
                       ]}
                     >
                       {tool.name}
@@ -47,3 +47,13 @@ const currentPath = Astro.url.pathname;
     </ul>
   </nav>
 </aside>
+
+<style is:global>
+  .sidebar-nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
+  }
+</style>

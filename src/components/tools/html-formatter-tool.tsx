@@ -3,71 +3,12 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import jsBeautify from "js-beautify";
+const { html: htmlBeautify } = jsBeautify;
 
 type Mode = "pretty" | "minify";
 
-const VOID = new Set([
-  "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta",
-  "param", "source", "track", "wbr",
-]);
-
-const SAMPLE = `<!doctype html><html><head><meta charset="utf-8"><title>Hi</title></head><body><main><h1>Hello</h1><p class="lead">A short paragraph.</p><ul><li>One</li><li>Two</li></ul></main></body></html>`;
-
-function tokenize(input: string): Array<{ type: "tag" | "text" | "comment" | "doctype"; value: string }> {
-  const tokens: Array<{ type: "tag" | "text" | "comment" | "doctype"; value: string }> = [];
-  let i = 0;
-  while (i < input.length) {
-    if (input.startsWith("<!--", i)) {
-      const end = input.indexOf("-->", i);
-      const stop = end === -1 ? input.length : end + 3;
-      tokens.push({ type: "comment", value: input.slice(i, stop) });
-      i = stop;
-      continue;
-    }
-    if (/^<!doctype/i.test(input.slice(i, i + 9))) {
-      const end = input.indexOf(">", i);
-      const stop = end === -1 ? input.length : end + 1;
-      tokens.push({ type: "doctype", value: input.slice(i, stop) });
-      i = stop;
-      continue;
-    }
-    if (input[i] === "<") {
-      const end = input.indexOf(">", i);
-      const stop = end === -1 ? input.length : end + 1;
-      tokens.push({ type: "tag", value: input.slice(i, stop) });
-      i = stop;
-      continue;
-    }
-    const next = input.indexOf("<", i);
-    const stop = next === -1 ? input.length : next;
-    const value = input.slice(i, stop);
-    if (value.trim()) tokens.push({ type: "text", value: value.trim() });
-    i = stop;
-  }
-  return tokens;
-}
-
-function format(input: string, indent: number): string {
-  const tokens = tokenize(input);
-  const out: string[] = [];
-  let depth = 0;
-  const pad = () => " ".repeat(depth * indent);
-  for (const t of tokens) {
-    if (t.type === "doctype" || t.type === "comment") { out.push(pad() + t.value); continue; }
-    if (t.type === "text") { out.push(pad() + t.value); continue; }
-    const v = t.value;
-    if (v.startsWith("</")) {
-      depth = Math.max(0, depth - 1);
-      out.push(pad() + v);
-    } else if (v.endsWith("/>") || VOID.has(v.match(/^<\s*([a-zA-Z0-9-]+)/)?.[1]?.toLowerCase() ?? "")) {
-      out.push(pad() + v);
-    } else {
-      out.push(pad() + v);
-      depth++;
-    }
-  }
-  return out.join("\n");
-}
+const SAMPLE = `<!doctype html><html><head><meta charset="utf-8"><title>Hi</title></head><body><main><h1>Hello</h1><p class="lead">A short paragraph with <strong>bold</strong> and <a href="#">link</a>.</p><ul><li>One</li><li>Two</li></ul><script>console.log("hello world");</script></main></body></html>`;
 
 function minify(input: string): string {
   return input
@@ -85,7 +26,20 @@ export default function HtmlFormatterTool() {
   const output = useMemo(() => {
     if (!input.trim()) return "";
     try {
-      return mode === "pretty" ? format(input, Number(indent)) : minify(input);
+      if (mode === "minify") return minify(input);
+      return htmlBeautify(input, {
+        indent_size: Number(indent),
+        indent_char: " ",
+        max_preserve_newlines: 1,
+        preserve_newlines: true,
+        indent_scripts: "normal",
+        end_with_newline: false,
+        wrap_line_length: 0,
+        indent_inner_html: false,
+        unformatted: ["code", "pre", "em", "strong", "span"],
+        content_unformatted: ["pre", "textarea"],
+        extra_liners: [],
+      });
     } catch (err) {
       return err instanceof Error ? err.message : "Failed";
     }
@@ -146,9 +100,6 @@ export default function HtmlFormatterTool() {
           />
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">
-        Lightweight formatter — handles common tag structure, void elements, comments, doctype.
-      </p>
     </div>
   );
 }

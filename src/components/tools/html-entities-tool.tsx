@@ -3,91 +3,33 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { encodeHTML, encodeXML, escapeUTF8, decodeHTML, decodeXML } from "entities";
 
 type Mode = "encode" | "decode";
-
-const NAMED: Record<string, string> = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-  nbsp: " ",
-  copy: "©",
-  reg: "®",
-  trade: "™",
-  hellip: "…",
-  mdash: "—",
-  ndash: "–",
-  laquo: "«",
-  raquo: "»",
-  euro: "€",
-  pound: "£",
-  yen: "¥",
-  cent: "¢",
-  para: "¶",
-  sect: "§",
-  deg: "°",
-  plusmn: "±",
-  middot: "·",
-  bull: "•",
-  larr: "←",
-  uarr: "↑",
-  rarr: "→",
-  darr: "↓",
-  harr: "↔",
-};
-
-function encodeAll(input: string): string {
-  let out = "";
-  for (const ch of input) {
-    const code = ch.codePointAt(0)!;
-    if (ch === "&") out += "&amp;";
-    else if (ch === "<") out += "&lt;";
-    else if (ch === ">") out += "&gt;";
-    else if (ch === '"') out += "&quot;";
-    else if (ch === "'") out += "&#39;";
-    else if (code < 128) out += ch;
-    else out += `&#${code};`;
-  }
-  return out;
-}
-
-function encodeMinimal(input: string): string {
-  return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function decodeEntities(input: string): string {
-  return input.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]*);/g, (whole, body) => {
-    if (body[0] === "#") {
-      const isHex = body[1] === "x" || body[1] === "X";
-      const code = parseInt(body.slice(isHex ? 2 : 1), isHex ? 16 : 10);
-      if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return whole;
-      try {
-        return String.fromCodePoint(code);
-      } catch {
-        return whole;
-      }
-    }
-    return NAMED[body] ?? whole;
-  });
-}
+type EncodeMode = "html-all" | "html-minimal" | "xml" | "utf8-safe";
 
 export default function HtmlEntitiesTool() {
   const [mode, setMode] = useState<Mode>("encode");
+  const [encodeMode, setEncodeMode] = useState<EncodeMode>("html-minimal");
   const [input, setInput] = useState("");
-  const [allChars, setAllChars] = useState(false);
 
   const output = useMemo(() => {
     if (!input) return "";
-    if (mode === "decode") return decodeEntities(input);
-    return allChars ? encodeAll(input) : encodeMinimal(input);
-  }, [input, mode, allChars]);
+    if (mode === "encode") {
+      switch (encodeMode) {
+        case "html-all":     return encodeHTML(input);
+        case "html-minimal": return escapeUTF8(input);
+        case "xml":          return encodeXML(input);
+        case "utf8-safe":    return escapeUTF8(input);
+      }
+    } else {
+      try {
+        return decodeHTML(input);
+      } catch {
+        try { return decodeXML(input); } catch { return input; }
+      }
+    }
+  }, [input, mode, encodeMode]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -102,17 +44,19 @@ export default function HtmlEntitiesTool() {
           ]}
         />
         {mode === "encode" && (
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={allChars}
-              onChange={(e) => setAllChars(e.target.checked)}
-              className="h-4 w-4 rounded border-input accent-brand"
-            />
-            <span>Encode all non-ASCII chars</span>
-          </label>
+          <SegmentedControl
+            size="sm"
+            ariaLabel="Encode mode"
+            value={encodeMode}
+            onChange={(v) => setEncodeMode(v as EncodeMode)}
+            options={[
+              { value: "html-minimal", label: "Minimal" },
+              { value: "html-all",     label: "All named" },
+              { value: "xml",          label: "XML" },
+            ]}
+          />
         )}
-        <Button variant="ghost" size="sm" onClick={() => setInput("")} disabled={!input} className="ml-auto">
+        <Button variant="ghost" size="sm" onClick={() => setInput("")} disabled={!input}>
           Clear
         </Button>
       </div>
@@ -124,7 +68,7 @@ export default function HtmlEntitiesTool() {
             value={input}
             onChange={setInput}
             language="html"
-            placeholder={mode === "encode" ? "<div>Hello & welcome</div>" : "&lt;div&gt;Hello&lt;/div&gt;"}
+            placeholder={mode === "encode" ? "<div>Hello & welcome © 2024</div>" : "&lt;div&gt;Hello &amp; welcome &copy; 2024&lt;/div&gt;"}
             minHeight="200px"
             className="lg:min-h-[300px]"
           />
@@ -132,10 +76,10 @@ export default function HtmlEntitiesTool() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Output</span>
-            <CopyButton value={output} />
+            <CopyButton value={output ?? ""} />
           </div>
           <CodeEditor
-            value={output}
+            value={output ?? ""}
             language="html"
             readOnly
             minHeight="200px"
@@ -143,6 +87,13 @@ export default function HtmlEntitiesTool() {
           />
         </div>
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        Minimal: escapes only <code>&amp; &lt; &gt; &quot; &apos;</code> —
+        All named: uses full HTML5 named entities (e.g. <code>&amp;uuml;</code>) —
+        XML: numeric references for non-ASCII.
+        Decode handles both named and numeric HTML/XML entities.
+      </p>
     </div>
   );
 }

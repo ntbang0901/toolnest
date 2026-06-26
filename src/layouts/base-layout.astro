@@ -1,22 +1,38 @@
 ---
 import "@/styles/globals.css";
-import Header from "@/components/layout/header.astro";
-import Sidebar from "@/components/layout/sidebar.astro";
 import Footer from "@/components/layout/footer.astro";
+import HeaderBar from "@/components/layout/header-bar.tsx";
+import SidebarNav from "@/components/layout/sidebar-nav.tsx";
+import MobileBottomNav from "@/components/layout/mobile-bottom-nav.tsx";
+import MobileNavTrigger from "@/components/layout/mobile-nav-trigger.tsx";
+import KeyboardShortcutsDialog from "@/components/layout/keyboard-shortcuts-dialog.tsx";
+import { tools, type ToolCategory } from "@/lib/tools-registry";
+import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title?: string;
   description?: string;
   showSidebar?: boolean;
+  currentTool?: { slug: string; name: string; category: ToolCategory } | null;
 }
 
 const {
   title = "Toolnest — All-in-one developer toolbox",
   description = "Free, no account, no tracking. JSON formatter, Base64, JWT decoder, Unix timestamp, and more — all in your browser.",
   showSidebar = true,
+  currentTool = null,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+const currentPath = Astro.url.pathname;
+
+const toolIndex = tools.map(({ slug, name, description, category, keywords }) => ({
+  slug,
+  name,
+  description,
+  category,
+  keywords,
+}));
 ---
 
 <!doctype html>
@@ -37,27 +53,64 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
     <meta property="og:url" content={canonicalURL} />
     <meta name="twitter:card" content="summary_large_image" />
     <title>{title}</title>
+    <ClientRouter />
     <script is:inline>
       (function () {
-        try {
-          const stored = localStorage.getItem("theme");
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          const theme = stored ?? (prefersDark ? "dark" : "light");
-          if (theme === "dark") document.documentElement.classList.add("dark");
-        } catch (e) {
-          document.documentElement.classList.add("dark");
+        function applyTheme(root) {
+          try {
+            var stored = localStorage.getItem("theme");
+            var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            var theme = stored ?? (prefersDark ? "dark" : "light");
+            root.classList.toggle("dark", theme === "dark");
+          } catch (e) {
+            root.classList.add("dark");
+          }
         }
+        function applySidebarWidth(root) {
+          try {
+            var collapsed = localStorage.getItem("sidebar-collapsed");
+            var width = localStorage.getItem("sidebar-width");
+            if (collapsed && JSON.parse(collapsed)) {
+              root.style.setProperty("--sidebar-init-width", "56px");
+            } else if (width) {
+              root.style.setProperty("--sidebar-init-width", JSON.parse(width) + "px");
+            } else {
+              root.style.setProperty("--sidebar-init-width", "240px");
+            }
+          } catch (e) {
+            root.style.setProperty("--sidebar-init-width", "240px");
+          }
+        }
+        applyTheme(document.documentElement);
+        applySidebarWidth(document.documentElement);
+        // astro:before-swap fires BEFORE the new DOM replaces the current one,
+        // giving access to newDocument. Applying theme here means the incoming
+        // HTML already has the dark class when it's painted — no white flash.
+        document.addEventListener("astro:before-swap", function (e) {
+          applyTheme(e.newDocument.documentElement);
+          applySidebarWidth(e.newDocument.documentElement);
+        });
       })();
     </script>
   </head>
-  <body class="min-h-screen bg-background text-foreground">
-    <Header />
-    <div class="mx-auto flex w-full max-w-7xl gap-6 px-4 py-6">
-      {showSidebar && <Sidebar />}
-      <main class="min-w-0 flex-1">
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-3 focus:py-1.5 focus:text-primary-foreground focus:text-sm">Skip to content</a>
+    <HeaderBar
+      client:load
+      transition:persist="header"
+      tools={toolIndex}
+      currentPath={currentPath}
+      currentTool={currentTool}
+    />
+    <div class="mx-auto flex w-full max-w-[1400px] gap-0 px-0 lg:px-2">
+      {showSidebar && <SidebarNav client:load transition:persist="sidebar" currentPath={currentPath} />}
+      <main id="main-content" class="min-w-0 flex-1 px-4 py-4 lg:px-6 lg:py-6 pb-20 lg:pb-6">
         <slot />
       </main>
     </div>
     <Footer />
+    {showSidebar && <MobileBottomNav client:load transition:persist="mobile-bottom-nav" currentPath={currentPath} />}
+    {showSidebar && <MobileNavTrigger client:load transition:persist="mobile-nav-trigger" currentPath={currentPath} />}
+    <KeyboardShortcutsDialog client:load transition:persist="shortcuts" />
   </body>
 </html>

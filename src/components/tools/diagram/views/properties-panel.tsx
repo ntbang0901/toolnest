@@ -55,7 +55,7 @@ export function PropertiesPanel({
         <button
           type="button"
           onClick={onDuplicate}
-          className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs hover:bg-accent"
+          className="flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-xs hover:bg-muted"
         >
           Duplicate
         </button>
@@ -156,7 +156,7 @@ function NodeProperties({
           <button
             type="button"
             onClick={() => onChange({ rotation: ((d.rotation ?? 0) + 90) % 360 })}
-            className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background hover:bg-accent"
+            className="flex h-7 w-7 items-center justify-center rounded-md border border-input bg-background hover:bg-muted"
             aria-label="Rotate 90°"
           >
             <RotateCw className="h-3.5 w-3.5" />

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 type Direction = "xml2json" | "json2xml";
 
@@ -28,7 +29,7 @@ function convert(input: string, dir: Direction, indent: number): string {
 
 export default function XmlJsonTool() {
   const [direction, setDirection] = useState<Direction>("xml2json");
-  const [input, setInput] = useState(SAMPLE_XML);
+  const [input, setInput] = useState(() => { const r = formatInput(SAMPLE_XML, "xml"); return r.ok ? r.value : SAMPLE_XML; });
   const [indent, setIndent] = useState<"2" | "4">("2");
 
   const result = useMemo(() => {
@@ -64,6 +65,17 @@ export default function XmlJsonTool() {
             { value: "4", label: "4 sp" },
           ]}
         />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            const r = formatInput(input, direction === "xml2json" ? "xml" : "json");
+            if (r.ok) setInput(r.value);
+          }}
+          disabled={!input.trim() || !result.ok}
+        >
+          Format
+        </Button>
         <Button
           variant="ghost"
           size="sm"

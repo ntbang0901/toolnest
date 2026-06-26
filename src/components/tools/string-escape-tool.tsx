@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 
@@ -128,23 +128,25 @@ export default function StringEscapeTool() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Textarea
+        <CodeEditor
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
+          language="plain"
           placeholder={mode === "escape" ? "Type or paste raw text…" : "Paste escaped string…"}
-          className="min-h-[220px] font-mono text-sm lg:min-h-[320px]"
-          spellCheck={false}
+          minHeight="220px"
+          className="lg:min-h-[320px]"
         />
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Output</span>
             <CopyButton value={result.ok ? result.value : ""} />
           </div>
-          <Textarea
+          <CodeEditor
             value={result.ok ? result.value : ""}
             readOnly
-            className="min-h-[220px] font-mono text-sm lg:min-h-[320px]"
-            spellCheck={false}
+            language="plain"
+            minHeight="220px"
+            className="lg:min-h-[320px]"
           />
           {!result.ok && <p className="text-xs text-destructive">{result.error}</p>}
         </div>

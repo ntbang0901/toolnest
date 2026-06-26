@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 
@@ -59,12 +59,13 @@ export default function Base64Tool() {
           <span className="text-sm font-medium">
             Input ({mode === "encode" ? "plain text" : "base64"})
           </span>
-          <Textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language="plain"
             placeholder={mode === "encode" ? "Type or paste text…" : "Paste base64 here…"}
-            className="min-h-[200px] font-mono text-sm lg:min-h-[340px]"
-            spellCheck={false}
+            minHeight="200px"
+            className="lg:min-h-[340px]"
           />
         </div>
 
@@ -73,11 +74,12 @@ export default function Base64Tool() {
             <span className="text-sm font-medium">Output</span>
             <CopyButton value={result.ok ? result.value : ""} />
           </div>
-          <Textarea
+          <CodeEditor
             value={result.ok ? result.value : ""}
             readOnly
-            className="min-h-[200px] font-mono text-sm lg:min-h-[340px]"
-            spellCheck={false}
+            language="plain"
+            minHeight="200px"
+            className="lg:min-h-[340px]"
           />
           <div className="min-h-[1.25rem] text-xs">
             {!result.ok && <span className="text-destructive">{result.error}</span>}

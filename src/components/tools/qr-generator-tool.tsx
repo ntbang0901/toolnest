@@ -3,7 +3,7 @@ import qrcode from "qrcode-generator";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -128,12 +128,13 @@ export default function QrGeneratorTool() {
         />
 
         {tab === "text" && (
-          <Textarea
+          <CodeEditor
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={setText}
+            language="plain"
             placeholder="Type any text or paste a URL…"
-            className="min-h-[160px] lg:min-h-[200px]"
-            spellCheck={false}
+            minHeight="160px"
+            className="lg:min-h-[200px]"
           />
         )}
 
@@ -174,11 +175,12 @@ export default function QrGeneratorTool() {
             <LabeledInput label="Subject" value={emailSubject} onChange={setEmailSubject} placeholder="Optional" />
             <div className="flex flex-col gap-1.5">
               <span className="text-sm font-medium">Body</span>
-              <Textarea
+              <CodeEditor
                 value={emailBody}
-                onChange={(e) => setEmailBody(e.target.value)}
+                onChange={setEmailBody}
+                language="plain"
                 placeholder="Optional"
-                className="min-h-[100px]"
+                minHeight="100px"
               />
             </div>
           </div>

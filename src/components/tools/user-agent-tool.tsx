@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 
 const BROWSERS: Array<{ name: string; re: RegExp }> = [
   { name: "Edge", re: /Edg(?:e|A|iOS)?\/([\d.]+)/ },
@@ -93,12 +93,12 @@ export default function UserAgentTool() {
           </Button>
         </div>
       </div>
-      <Textarea
+      <CodeEditor
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={setInput}
+        language="plain"
         placeholder="Paste a user-agent string, or leave empty to parse your browser…"
-        className="min-h-[100px] font-mono text-xs"
-        spellCheck={false}
+        minHeight="100px"
       />
       <p className="break-all text-xs text-muted-foreground">{ua || "—"}</p>
 

@@ -109,14 +109,19 @@ function generatePalette(base: HSL, harmony: Harmony): Color[] {
   }
 }
 
+function srgbToLinear(c: number): number {
+  return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+}
+
 function contrastColor(hex: string): string {
   const m = hex.replace("#", "").match(/^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
   if (!m) return "#000";
-  const r = parseInt(m[1], 16) / 255;
-  const g = parseInt(m[2], 16) / 255;
-  const b = parseInt(m[3], 16) / 255;
+  const r = srgbToLinear(parseInt(m[1], 16) / 255);
+  const g = srgbToLinear(parseInt(m[2], 16) / 255);
+  const b = srgbToLinear(parseInt(m[3], 16) / 255);
+  // WCAG 2.1 relative luminance
   const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return lum > 0.45 ? "#000000" : "#ffffff";
+  return lum > 0.179 ? "#000000" : "#ffffff";
 }
 
 const HARMONIES: { value: Harmony; label: string; description: string }[] = [

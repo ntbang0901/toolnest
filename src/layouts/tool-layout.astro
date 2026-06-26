@@ -17,24 +17,11 @@ const related = getToolsByCategory(tool.category)
   .slice(0, 4);
 
 const title = `${tool.name} — Toolnest`;
+const currentTool = { slug: tool.slug, name: tool.name, category: tool.category };
 ---
 
-<BaseLayout title={title} description={tool.description}>
+<BaseLayout title={title} description={tool.description} currentTool={currentTool}>
   <RecentTracker client:load slug={tool.slug} />
-
-  <nav aria-label="Breadcrumb" class="mb-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-    <a href="/" class="transition-colors hover:text-foreground">Tools</a>
-    {
-      category && (
-        <>
-          <span class="text-muted-foreground/50">/</span>
-          <span>{category.label}</span>
-        </>
-      )
-    }
-    <span class="text-muted-foreground/50">/</span>
-    <span class="text-foreground">{tool.name}</span>
-  </nav>
 
   <header class="mb-6">
     <h1 class="text-xl font-semibold tracking-tight sm:text-2xl">{tool.name}</h1>
@@ -55,7 +42,7 @@ const title = `${tool.name} — Toolnest`;
             return (
               <a
                 href={`/tools/${t.slug}`}
-                class="group flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-all hover:bg-accent/50 hover:translate-x-0.5"
+                class="group flex items-center gap-2 rounded-lg px-2.5 py-1.5 transition-all hover:bg-muted hover:translate-x-0.5"
               >
                 <Icon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60 group-hover:text-muted-foreground transition-colors" />
                 <span class="truncate text-sm text-muted-foreground group-hover:text-foreground transition-colors">{t.name}</span>

@@ -138,7 +138,7 @@ export default function UnitConverterTool() {
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               category === c
                 ? "bg-primary/10 text-primary border border-primary/20"
-                : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+                : "bg-muted text-muted-foreground hover:bg-secondary hover:text-foreground"
             }`}
           >
             {CATEGORIES[c].label}

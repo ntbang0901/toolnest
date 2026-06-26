@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyButton } from "@/components/tools/copy-button";
@@ -127,7 +127,7 @@ export default function LoremIpsumTool() {
           </span>
           <CopyButton value={output} label="Copy" />
         </div>
-        <Textarea value={output} readOnly className="min-h-[280px] lg:min-h-[400px]" spellCheck={false} />
+        <CodeEditor value={output} readOnly language="plain" minHeight="280px" className="lg:min-h-[400px]" />
       </div>
     </div>
   );

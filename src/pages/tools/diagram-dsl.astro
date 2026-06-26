@@ -1,0 +1,8 @@
+---
+import ToolLayout from "@/layouts/tool-layout.astro";
+import DiagramDslTool from "@/components/tools/diagram-dsl-tool.tsx";
+---
+
+<ToolLayout slug="diagram-dsl">
+  <DiagramDslTool client:only="react" />
+</ToolLayout>

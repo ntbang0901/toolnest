@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { CopyButton } from "@/components/tools/copy-button";
 
 function tokenize(input: string): string[] {
@@ -51,12 +51,12 @@ export default function CaseConverterTool() {
             Clear
           </Button>
         </div>
-        <Textarea
+        <CodeEditor
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={setInput}
+          language="plain"
           placeholder="Type or paste any text — handles camelCase, snake_case, kebab-case, spaces…"
-          className="min-h-[120px]"
-          spellCheck={false}
+          minHeight="120px"
         />
       </div>
 

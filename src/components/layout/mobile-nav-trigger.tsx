@@ -2,13 +2,21 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { categories, tools, type ToolCategory } from "@/lib/tools-registry";
+import { useCurrentPath } from "@/lib/use-current-path";
 
 interface Props {
   currentPath: string;
 }
 
-export default function MobileNavTrigger({ currentPath }: Props) {
+export default function MobileNavTrigger({ currentPath: currentPathProp }: Props) {
+  const currentPath = useCurrentPath(currentPathProp);
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("open-mobile-nav", onOpen);
+    return () => window.removeEventListener("open-mobile-nav", onOpen);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -105,7 +113,7 @@ function CategoryGroup({
                 className={`flex items-center gap-2 rounded-lg px-2.5 py-2 transition-all ${
                   active
                     ? "bg-primary/10 text-primary font-medium"
-                    : "text-muted-foreground hover:bg-accent/60 hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4 shrink-0" />

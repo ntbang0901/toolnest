@@ -53,7 +53,7 @@ export default function CommandPaletteTrigger({ tools }: Props) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search tools"
-        className="inline-flex h-9 w-full max-w-xs items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-foreground hover:border-foreground/20 sm:w-72"
+        className="inline-flex h-9 w-full max-w-xs items-center gap-2 rounded-lg border border-input bg-background px-3 text-sm text-muted-foreground transition-all hover:bg-muted hover:text-foreground hover:border-foreground/20 sm:w-72"
       >
         <Search className="h-4 w-4" />
         <span className="flex-1 text-left">

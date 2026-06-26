@@ -317,7 +317,7 @@ export default function GitignoreGeneratorTool() {
                     className={`rounded-full px-3 py-1 text-sm font-medium transition-colors border ${
                       active
                         ? "bg-primary/10 text-primary border-primary/30"
-                        : "bg-muted text-muted-foreground border-transparent hover:bg-accent hover:text-foreground"
+                        : "bg-muted text-muted-foreground border-transparent hover:bg-secondary hover:text-foreground"
                     }`}
                   >
                     {name}

@@ -4,6 +4,7 @@ import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 type Direction = "csv2json" | "json2csv";
 
@@ -155,9 +156,20 @@ export default function CsvJsonTool() {
         <Button
           variant="ghost"
           size="sm"
+          onClick={() => {
+            const r = formatInput(input, "json");
+            if (r.ok) setInput(r.value);
+          }}
+          disabled={direction !== "json2csv" || !input.trim() || !result.ok}
+          className="ml-auto"
+        >
+          Format
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => setInput("")}
           disabled={!input}
-          className="ml-auto"
         >
           Clear
         </Button>

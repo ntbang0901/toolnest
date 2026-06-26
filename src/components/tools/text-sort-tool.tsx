@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyButton } from "@/components/tools/copy-button";
@@ -104,12 +104,13 @@ export default function TextSortTool() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Input</span>
-          <Textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language="plain"
             placeholder="One item per line…"
-            className="min-h-[220px] font-mono text-sm lg:min-h-[320px]"
-            spellCheck={false}
+            minHeight="220px"
+            className="lg:min-h-[320px]"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -119,11 +120,12 @@ export default function TextSortTool() {
             </span>
             <CopyButton value={output} />
           </div>
-          <Textarea
+          <CodeEditor
             value={output}
             readOnly
-            className="min-h-[220px] font-mono text-sm lg:min-h-[320px]"
-            spellCheck={false}
+            language="plain"
+            minHeight="220px"
+            className="lg:min-h-[320px]"
           />
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 
 const FLAG_OPTS: Array<{ id: string; label: string; hint: string }> = [
   { id: "g", label: "g", hint: "global" },
@@ -127,12 +127,12 @@ export default function RegexTesterTool() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium" htmlFor="regex-input">Test string</label>
-          <Textarea
-            id="regex-input"
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            className="min-h-[180px] font-mono text-sm lg:min-h-[220px]"
-            spellCheck={false}
+            onChange={setInput}
+            language="plain"
+            minHeight="180px"
+            className="lg:min-h-[220px]"
           />
           <div className="rounded-md border border-border bg-muted/30 p-3 font-mono text-sm whitespace-pre-wrap break-words">
             {segments.map((s, i) => (
@@ -201,11 +201,11 @@ export default function RegexTesterTool() {
             placeholder="$1, $2, ${name}…"
             className="font-mono"
           />
-          <Textarea
+          <CodeEditor
             value={replaced}
             readOnly
-            className="min-h-[120px] font-mono text-sm"
-            spellCheck={false}
+            language="plain"
+            minHeight="120px"
           />
         </div>
       </div>

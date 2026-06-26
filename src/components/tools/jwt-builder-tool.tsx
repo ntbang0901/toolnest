@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CopyButton } from "@/components/tools/copy-button";
 import { CodeEditor } from "@/components/tools/code-editor";
+import { formatInput } from "@/lib/format-input";
 
 // Web Crypto based HMAC-SHA256 JWT builder — runs entirely in the browser
 
@@ -102,6 +103,17 @@ export default function JwtBuilderTool() {
         <div className="flex items-center justify-between">
           <label className="text-sm font-medium">Payload (JSON)</label>
           <div className="flex gap-1.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                const r = formatInput(payloadText, "json");
+                if (r.ok) setPayloadText(r.value);
+              }}
+              disabled={!payloadText.trim()}
+            >
+              Format
+            </Button>
             {[
               ["exp", Math.floor(Date.now() / 1000) + 3600, "exp +1h"],
               ["iat", Math.floor(Date.now() / 1000), "iat now"],

@@ -17,7 +17,7 @@ import {
   Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { CopyButton } from "@/components/tools/copy-button";
 import { type DbTableData } from "@/components/tools/db-diagram/table-node";
@@ -542,12 +542,13 @@ function EditorPanel({ dbml, setDbml, parseError, lintIssues, onJump }: EditorPa
         <span className="text-sm font-medium">DBML</span>
         <CopyButton value={dbml} />
       </div>
-      <Textarea
+      <CodeEditor
         value={dbml}
-        onChange={(e) => setDbml(e.target.value)}
+        onChange={setDbml}
+        language="plain"
         placeholder="Table users { id int [pk] ... }"
-        className="min-h-[300px] font-mono text-sm lg:min-h-[480px]"
-        spellCheck={false}
+        minHeight="300px"
+        className="lg:min-h-[480px]"
       />
       {parseError && <p className="text-xs text-destructive">{parseError}</p>}
       {!parseError && <LintPanel issues={lintIssues} onJump={onJump} />}
@@ -692,12 +693,13 @@ function ImportPanel({ importSql, setImportSql, importFmt, setImportFmt, dbml, h
             <Upload className="h-4 w-4" /> Import to DBML
           </Button>
         </div>
-        <Textarea
+        <CodeEditor
           value={importSql}
-          onChange={(e) => setImportSql(e.target.value)}
+          onChange={setImportSql}
+          language="sql"
           placeholder="CREATE TABLE users ( ... );"
-          className="min-h-[420px] font-mono text-sm lg:min-h-[600px]"
-          spellCheck={false}
+          minHeight="420px"
+          className="lg:min-h-[600px]"
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -705,11 +707,12 @@ function ImportPanel({ importSql, setImportSql, importFmt, setImportFmt, dbml, h
           <span className="text-sm font-medium">Current DBML (will be replaced)</span>
           <CopyButton value={dbml} />
         </div>
-        <Textarea
+        <CodeEditor
           value={dbml}
           readOnly
-          className="min-h-[420px] font-mono text-sm lg:min-h-[600px]"
-          spellCheck={false}
+          language="plain"
+          minHeight="420px"
+          className="lg:min-h-[600px]"
         />
       </div>
     </div>
@@ -733,11 +736,12 @@ function ExportPanel({ dbml, setDbml, exportFmt, setExportFmt, exported, parseEr
           <span className="text-sm font-medium">DBML</span>
           <CopyButton value={dbml} />
         </div>
-        <Textarea
+        <CodeEditor
           value={dbml}
-          onChange={(e) => setDbml(e.target.value)}
-          className="min-h-[420px] font-mono text-sm lg:min-h-[600px]"
-          spellCheck={false}
+          onChange={setDbml}
+          language="plain"
+          minHeight="420px"
+          className="lg:min-h-[600px]"
         />
         {parseError && <p className="text-xs text-destructive">{parseError}</p>}
       </div>
@@ -758,11 +762,12 @@ function ExportPanel({ dbml, setDbml, exportFmt, setExportFmt, exported, parseEr
           />
           <CopyButton value={exported} className="ml-auto" />
         </div>
-        <Textarea
+        <CodeEditor
           value={exported}
           readOnly
-          className="min-h-[420px] font-mono text-sm lg:min-h-[600px]"
-          spellCheck={false}
+          language="plain"
+          minHeight="420px"
+          className="lg:min-h-[600px]"
         />
       </div>
     </div>

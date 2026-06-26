@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { CodeEditor } from "@/components/tools/code-editor";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CopyButton } from "@/components/tools/copy-button";
 
@@ -52,12 +52,13 @@ export default function SlugifyTool() {
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-2">
           <span className="text-sm font-medium">Input</span>
-          <Textarea
+          <CodeEditor
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={setInput}
+            language="plain"
             placeholder="Bài viết về JavaScript & TypeScript"
-            className="min-h-[220px] lg:min-h-[280px]"
-            spellCheck={false}
+            minHeight="220px"
+            className="lg:min-h-[280px]"
           />
         </div>
         <div className="flex flex-col gap-2">
@@ -65,11 +66,12 @@ export default function SlugifyTool() {
             <span className="text-sm font-medium">Slug</span>
             <CopyButton value={slugged} />
           </div>
-          <Textarea
+          <CodeEditor
             value={slugged}
             readOnly
-            className="min-h-[220px] font-mono text-sm lg:min-h-[280px]"
-            spellCheck={false}
+            language="plain"
+            minHeight="220px"
+            className="lg:min-h-[280px]"
           />
         </div>
       </div>
